@@ -1,5 +1,5 @@
 require 'moonloader'
-script_version('1')
+script_version('2')
 local imgui             = require 'imgui'
 local key               = require 'vkeys'
 local encoding          = require 'encoding'
