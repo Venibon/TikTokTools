@@ -13,9 +13,9 @@ local sound             = loadAudioStream('moonloader/config/welcome.mp3')
 encoding.default        = 'CP1251'
 u8                      = encoding.UTF8
 
---123123
 
-function autoupdate(json_url, prefix, url)
+
+function autoupdate(json_url, tag, url)
   local dlstatus = require('moonloader').download_status
   local json = getWorkingDirectory() .. '\\'..thisScript().name..'-version.json'
   if doesFileExist(json) then os.remove(json) end
@@ -31,10 +31,10 @@ function autoupdate(json_url, prefix, url)
             f:close()
             os.remove(json)
             if updateversion ~= thisScript().version then
-              lua_thread.create(function(prefix)
+              lua_thread.create(function(tag)
                 local dlstatus = require('moonloader').download_status
                 local color = -1
-                sampAddChatMessage((prefix..'Обнаружено обновление с версии '..thisScript().version..' на '..updateversion), color)
+                sampAddChatMessage(('{FFe300}[Ломка]{0060FF}Обнаружено обновление с версии '..thisScript().version..' на '..updateversion), color)
                 wait(250)
                 downloadUrlToFile(updatelink, thisScript().path,
                   function(id3, status1, p13, p23)
@@ -42,19 +42,19 @@ function autoupdate(json_url, prefix, url)
                       print(string.format('Загружено %d из %d.', p13, p23))
                     elseif status1 == dlstatus.STATUS_ENDDOWNLOADDATA then
                       print('Загрузка обновления завершена.')
-                      sampAddChatMessage((prefix..'Обновление к версии: '..updateversion..' завершено.'), color)
+                      sampAddChatMessage(('{FFe300}[Ломка]{0060FF}Обновление к версии: '..updateversion..' завершено.'), color)
                       goupdatestatus = true
                       lua_thread.create(function() wait(500) thisScript():reload() end)
                     end
                     if status1 == dlstatus.STATUSEX_ENDDOWNLOAD then
                       if goupdatestatus == nil then
-                        sampAddChatMessage((prefix..'Обновление прервалось. Сообщите автору скрипта vk.com/veni_rush'), color)
+                        sampAddChatMessage(('{FFe300}[Ломка]{0060FF}Обновление прервалось. Сообщите автору скрипта vk.com/veni_rush'), color)
                         update = false
                       end
                     end
                   end
                 )
-                end, prefix
+                end, tag
               )
             else
               update = false
@@ -233,7 +233,7 @@ function main()
   while not isSampAvailable() do wait(0) end
   sampRegisterChatCommand('ttt',cmd)
 sampAddChatMessage('123123')
-  autoupdate("https://raw.githubusercontent.com/Venibon/TikTokTools/main/update.json", '['..string.upper(thisScript().name)..']: ', "https://raw.githubusercontent.com/Venibon/TikTokTools/main/update.json")
+  autoupdate("https://raw.githubusercontent.com/Venibon/TikTokToolsbyVeni_Rush/main/update.json", '['..string.upper(thisScript().name)..']: ', "https://raw.githubusercontent.com/Venibon/TikTokToolsbyVeni_Rush/main/update.json")
     while true do
       imgui.Process = main_window_state.v
     wait(0)
