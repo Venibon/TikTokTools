@@ -13,9 +13,9 @@ local sound             = loadAudioStream('moonloader/config/welcome.mp3')
 encoding.default        = 'CP1251'
 u8                      = encoding.UTF8
 
+--123123
 
-
-function autoupdate(json_url, tag, url)
+function autoupdate(json_url, prefix, url)
   local dlstatus = require('moonloader').download_status
   local json = getWorkingDirectory() .. '\\'..thisScript().name..'-version.json'
   if doesFileExist(json) then os.remove(json) end
@@ -31,10 +31,10 @@ function autoupdate(json_url, tag, url)
             f:close()
             os.remove(json)
             if updateversion ~= thisScript().version then
-              lua_thread.create(function(tag)
+              lua_thread.create(function(prefix)
                 local dlstatus = require('moonloader').download_status
                 local color = -1
-                sampAddChatMessage((tag..'Обнаружено обновление с версии '..thisScript().version..' на '..updateversion), color)
+                sampAddChatMessage((prefix..'Обнаружено обновление с версии '..thisScript().version..' на '..updateversion), color)
                 wait(250)
                 downloadUrlToFile(updatelink, thisScript().path,
                   function(id3, status1, p13, p23)
@@ -42,19 +42,19 @@ function autoupdate(json_url, tag, url)
                       print(string.format('Загружено %d из %d.', p13, p23))
                     elseif status1 == dlstatus.STATUS_ENDDOWNLOADDATA then
                       print('Загрузка обновления завершена.')
-                      sampAddChatMessage((tag..'Обновление к версии: '..updateversion..' завершено.'), color)
+                      sampAddChatMessage((prefix..'Обновление к версии: '..updateversion..' завершено.'), color)
                       goupdatestatus = true
                       lua_thread.create(function() wait(500) thisScript():reload() end)
                     end
                     if status1 == dlstatus.STATUSEX_ENDDOWNLOAD then
                       if goupdatestatus == nil then
-                        sampAddChatMessage((tag..'Обновление прервалось. Сообщите автору скрипта vk.com/veni_rush'), color)
+                        sampAddChatMessage((prefix..'Обновление прервалось. Сообщите автору скрипта vk.com/veni_rush'), color)
                         update = false
                       end
                     end
                   end
                 )
-                end, tag
+                end, prefix
               )
             else
               update = false
@@ -71,68 +71,74 @@ function autoupdate(json_url, tag, url)
   while update ~= false do wait(100) end
 end
  
-function apply_custom_style()
-  --source: https://www.unknowncheats.me/forum/direct3d/189635-imgui-style-settings.html
+function theme()
   imgui.SwitchContext()
-  local style = imgui.GetStyle()
-  local -1s = style.-1s
-  local clr = imgui.Col
+  local style  = imgui.GetStyle()
+  local colors = style.Colors
+  local clr    = imgui.Col
   local ImVec4 = imgui.ImVec4
+  local ImVec2 = imgui.ImVec2
 
-  style.WindowPadding = imgui.ImVec2(15, 15)
-  style.WindowRounding = 1.5
-  style.FramePadding = imgui.ImVec2(5, 5)
-  style.FrameRounding = 4.0
-  style.ItemSpacing = imgui.ImVec2(12, 8)
-  style.ItemInnerSpacing = imgui.ImVec2(8, 6)
-  style.IndentSpacing = 25.0
-  style.ScrollbarSize = 15.0
-  style.ScrollbarRounding = 9.0
-  style.GrabMinSize = 5.0
-  style.GrabRounding = 3.0
+  style.WindowRounding         = 4.0
+  style.WindowTitleAlign       = ImVec2(0.5, 0.5)
+  style.ChildWindowRounding    = 2.0
+  style.FrameRounding          = 4.0
+  style.ItemSpacing            = ImVec2(10, 5)
+  style.ScrollbarSize          = 15
+  style.ScrollbarRounding      = 0
+  style.GrabMinSize            = 9.6
+  style.GrabRounding           = 1.0
+  style.WindowPadding          = ImVec2(10, 10)
+  style.AntiAliasedLines       = true
+  style.AntiAliasedShapes      = true
+  style.FramePadding           = ImVec2(5, 4)
+  style.DisplayWindowPadding   = ImVec2(27, 27)
+  style.DisplaySafeAreaPadding = ImVec2(5, 5)
+  style.ButtonTextAlign        = ImVec2(0.5, 0.5)
+  style.IndentSpacing          = 12.0
+  style.Alpha                  = 1.0
 
-  -1s[clr.Text] = ImVec4(0.80, 0.80, 0.83, 1.00)
-  -1s[clr.TextDisabled] = ImVec4(0.24, 0.23, 0.29, 1.00)
-  -1s[clr.WindowBg] = ImVec4(0.06, 0.05, 0.07, 1.00)
-  -1s[clr.ChildWindowBg] = ImVec4(0.07, 0.07, 0.09, 1.00)
-  -1s[clr.PopupBg] = ImVec4(0.07, 0.07, 0.09, 1.00)
-  -1s[clr.Border] = ImVec4(0.80, 0.80, 0.83, 0.88)
-  -1s[clr.BorderShadow] = ImVec4(0.92, 0.91, 0.88, 0.00)
-  -1s[clr.FrameBg] = ImVec4(0.10, 0.09, 0.12, 1.00)
-  -1s[clr.FrameBgHovered] = ImVec4(0.24, 0.23, 0.29, 1.00)
-  -1s[clr.FrameBgActive] = ImVec4(0.56, 0.56, 0.58, 1.00)
-  -1s[clr.TitleBg] = ImVec4(0.10, 0.09, 0.12, 1.00)
-  -1s[clr.TitleBgCollapsed] = ImVec4(1.00, 0.98, 0.95, 0.75)
-  -1s[clr.TitleBgActive] = ImVec4(0.07, 0.07, 0.09, 1.00)
-  -1s[clr.MenuBarBg] = ImVec4(0.10, 0.09, 0.12, 1.00)
-  -1s[clr.ScrollbarBg] = ImVec4(0.10, 0.09, 0.12, 1.00)
-  -1s[clr.ScrollbarGrab] = ImVec4(0.80, 0.80, 0.83, 0.31)
-  -1s[clr.ScrollbarGrabHovered] = ImVec4(0.56, 0.56, 0.58, 1.00)
-  -1s[clr.ScrollbarGrabActive] = ImVec4(0.06, 0.05, 0.07, 1.00)
-  -1s[clr.ComboBg] = ImVec4(0.19, 0.18, 0.21, 1.00)
-  -1s[clr.CheckMark] = ImVec4(0.80, 0.80, 0.83, 0.31)
-  -1s[clr.SliderGrab] = ImVec4(0.80, 0.80, 0.83, 0.31)
-  -1s[clr.SliderGrabActive] = ImVec4(0.06, 0.05, 0.07, 1.00)
-  -1s[clr.Button] = ImVec4(0.10, 0.09, 0.12, 1.00)
-  -1s[clr.ButtonHovered] = ImVec4(0.24, 0.23, 0.29, 1.00)
-  -1s[clr.ButtonActive] = ImVec4(0.56, 0.56, 0.58, 1.00)
-  -1s[clr.Header] = ImVec4(0.10, 0.09, 0.12, 1.00)
-  -1s[clr.HeaderHovered] = ImVec4(0.56, 0.56, 0.58, 1.00)
-  -1s[clr.HeaderActive] = ImVec4(0.06, 0.05, 0.07, 1.00)
-  -1s[clr.ResizeGrip] = ImVec4(0.00, 0.00, 0.00, 0.00)
-  -1s[clr.ResizeGripHovered] = ImVec4(0.56, 0.56, 0.58, 1.00)
-  -1s[clr.ResizeGripActive] = ImVec4(0.06, 0.05, 0.07, 1.00)
-  -1s[clr.CloseButton] = ImVec4(0.40, 0.39, 0.38, 0.16)
-  -1s[clr.CloseButtonHovered] = ImVec4(0.40, 0.39, 0.38, 0.39)
-  -1s[clr.CloseButtonActive] = ImVec4(0.40, 0.39, 0.38, 1.00)
-  -1s[clr.PlotLines] = ImVec4(0.40, 0.39, 0.38, 0.63)
-  -1s[clr.PlotLinesHovered] = ImVec4(0.25, 1.00, 0.00, 1.00)
-  -1s[clr.PlotHistogram] = ImVec4(0.40, 0.39, 0.38, 0.63)
-  -1s[clr.PlotHistogramHovered] = ImVec4(0.25, 1.00, 0.00, 1.00)
-  -1s[clr.TextSelectedBg] = ImVec4(0.25, 1.00, 0.00, 0.43)
-  -1s[clr.ModalWindowDarkening] = ImVec4(1.00, 0.98, 0.95, 0.73)
+  colors[clr.Text]                 = ImVec4(0.75, 0.75, 0.75, 1.00)
+  colors[clr.TextDisabled]         = ImVec4(0.35, 0.35, 0.35, 1.00)
+  colors[clr.WindowBg]             = ImVec4(0.00, 0.00, 0.00, 0.94)
+  colors[clr.ChildWindowBg]        = ImVec4(0.00, 0.00, 0.00, 0.00)
+  colors[clr.PopupBg]              = ImVec4(0.08, 0.08, 0.08, 0.94)
+  colors[clr.Border]               = ImVec4(0.00, 0.00, 0.00, 0.50)
+  colors[clr.BorderShadow]         = ImVec4(0.00, 0.00, 0.00, 0.00)
+  colors[clr.FrameBg]              = ImVec4(0.00, 0.00, 0.00, 0.54)
+  colors[clr.FrameBgHovered]       = ImVec4(0.37, 0.14, 0.14, 0.67)
+  colors[clr.FrameBgActive]        = ImVec4(0.39, 0.20, 0.20, 0.67)
+  colors[clr.TitleBg]              = ImVec4(0.04, 0.04, 0.04, 1.00)
+  colors[clr.TitleBgActive]        = ImVec4(0.48, 0.16, 0.16, 1.00)
+  colors[clr.TitleBgCollapsed]     = ImVec4(0.48, 0.16, 0.16, 1.00)
+  colors[clr.MenuBarBg]            = ImVec4(0.14, 0.14, 0.14, 1.00)
+  colors[clr.ScrollbarBg]          = ImVec4(0.02, 0.02, 0.02, 0.53)
+  colors[clr.ScrollbarGrab]        = ImVec4(0.31, 0.31, 0.31, 1.00)
+  colors[clr.ScrollbarGrabHovered] = ImVec4(0.41, 0.41, 0.41, 1.00)
+  colors[clr.ScrollbarGrabActive]  = ImVec4(0.51, 0.51, 0.51, 1.00)
+  colors[clr.CheckMark]            = ImVec4(0.56, 0.10, 0.10, 1.00)
+  colors[clr.SliderGrab]           = ImVec4(1.00, 0.19, 0.19, 0.40)
+  colors[clr.SliderGrabActive]     = ImVec4(0.89, 0.00, 0.19, 1.00)
+  colors[clr.Button]               = ImVec4(1.00, 0.19, 0.19, 0.40)
+  colors[clr.ButtonHovered]        = ImVec4(0.80, 0.17, 0.00, 1.00)
+  colors[clr.ButtonActive]         = ImVec4(0.89, 0.00, 0.19, 1.00)
+  colors[clr.Header]               = ImVec4(0.33, 0.35, 0.36, 0.53)
+  colors[clr.HeaderHovered]        = ImVec4(0.76, 0.28, 0.44, 0.67)
+  colors[clr.HeaderActive]         = ImVec4(0.47, 0.47, 0.47, 0.67)
+  colors[clr.Separator]            = ImVec4(0.32, 0.32, 0.32, 1.00)
+  colors[clr.SeparatorHovered]     = ImVec4(0.32, 0.32, 0.32, 1.00)
+  colors[clr.SeparatorActive]      = ImVec4(0.32, 0.32, 0.32, 1.00)
+  colors[clr.ResizeGrip]           = ImVec4(1.00, 1.00, 1.00, 0.85)
+  colors[clr.ResizeGripHovered]    = ImVec4(1.00, 1.00, 1.00, 0.60)
+  colors[clr.ResizeGripActive]     = ImVec4(1.00, 1.00, 1.00, 0.90)
+  colors[clr.PlotLines]            = ImVec4(0.61, 0.61, 0.61, 1.00)
+  colors[clr.PlotLinesHovered]     = ImVec4(1.00, 0.43, 0.35, 1.00)
+  colors[clr.PlotHistogram]        = ImVec4(0.90, 0.70, 0.00, 1.00)
+  colors[clr.PlotHistogramHovered] = ImVec4(1.00, 0.60, 0.00, 1.00)
+  colors[clr.TextSelectedBg]       = ImVec4(0.26, 0.59, 0.98, 0.35)
+  colors[clr.ModalWindowDarkening] = ImVec4(0.80, 0.80, 0.80, 0.35)
 end
-apply_custom_style()
+theme()
 local main_window_state = imgui.ImBool(false)
 function imgui.OnDrawFrame()
     if main_window_state.v then 
@@ -227,7 +233,7 @@ function main()
   while not isSampAvailable() do wait(0) end
   sampRegisterChatCommand('ttt',cmd)
 sampAddChatMessage('123123')
-  autoupdate("https://raw.githubusercontent.com/Venibon/TikTokToolsbyVeni_Rush/main/update.json", '['..string.upper(thisScript().name)..']: ', "https://raw.githubusercontent.com/Venibon/TikTokToolsbyVeni_Rush/main/update.json")
+  autoupdate("https://raw.githubusercontent.com/Venibon/TikTokTools/main/update.json", '['..string.upper(thisScript().name)..']: ', "https://raw.githubusercontent.com/Venibon/TikTokTools/main/update.json")
     while true do
       imgui.Process = main_window_state.v
     wait(0)
